@@ -43,22 +43,18 @@ int ft_printf(const char *args, ...)
 	va_start(arg, args);
 	while (i < length)
 	{
-		if (args[i] == '%')
+		if (args[i] == '%' && (args[i+1] == 'd' || args[i+1] == 'i'))
 		{
 			i++;
-			if (args[i] == 'd')
-				while (i <= length + 1)
-				{
-					ft_putchar(va_arg(arg, int));
-					i++;
-				}
-			else if (args[i] == 's')
-				ft_putstr(va_arg(arg, char *));
-			else if (args[i] == 'c')
-				ft_putchar(va_arg(arg, int));
-			else if (args[i] == '%')
-				ft_putchar('%');
+			ft_putnbr(va_arg(arg, int));
 		}
+		else if (args[i] == '%' && args[i+1] == 's')
+		{
+			i++;
+			ft_putstr(va_arg(arg, char *));
+		}
+		else
+			ft_putchar(args[i]);
 		i++;
 	}
 	va_end(arg);
