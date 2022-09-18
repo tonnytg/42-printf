@@ -1,35 +1,22 @@
 CC = cc
-CC_FLAGS = -Wall -Werror -Wall
+CC_ARGS = -c -g3 -Wall -Werror -Wextra
 
-SRC = src
+NAME = libftprintf.a
+SRC = src/ft_printf.c
+OBJS = $(SRC:.c=.o)
 
-NAME = "libftprintf.a"
-LIBFT = "libft.a"
-
-OBJ = $(SRC:.c=.o)
-
-all: copile run
-
-copile:
-	$(CC) $(CC_FLAGS) main.c $(SRC)/ft_printf.c
-
-run:
-	./a.out
+all: $(NAME)
 
 $(NAME): $(OBJS)
-	ar rcs $(NAME) $(OBJS)
+	@ar rc $(NAME) $^
 
-test:
-	@echo "testing"
+%.o: %.c
+	@$(CC) $(CC_ARGS) $< -o $@
 
 clean:
-	rm -f a.out
-	rm -f $(OBJS) $(LIBFT)
+	@rm -rf $(OBJS)
 
 fclean: clean
-	rm -f $(NAME)
+	@rm -rf $(NAME)
 
-re: fclean all
-
-
-.PHONY: all clean fclean re
+.PHONY: all clean fclean
