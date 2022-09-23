@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+static int	digits(unsigned int n);
+static int	is_negative(int n);
+
 static int	ft_hxnlen(unsigned long int n)
 {
 	int	i;
@@ -52,24 +55,66 @@ size_t	ft_strlen(const char *s)
 	return ((size_t)len);
 }
 
-
-void ft_putchar(int c)
+char	*ft_itoa(int n)
 {
-	write(1, &c, 1);
+	char			*str;
+	int				len;
+	int				negative;
+	unsigned int	nb;
+
+	nb = n;
+	negative = is_negative(n);
+	if (negative)
+		nb = n * (-1);
+	len = digits(nb) + negative;
+	str = malloc(len + 1);
+	if (!str)
+		return (NULL);
+	str[len] = '\0';
+	while (len--)
+	{
+		str[len] = (nb % 10) + '0';
+		nb /= 10;
+	}
+	if (negative)
+		str[0] = '-';
+	return (str);
 }
 
-void ft_putnbr(int nb)
+int	is_negative(int n)
 {
+	return (n < 0);
+}
+
+int	digits(unsigned int n)
+{
+	if (n < 10)
+		return (1);
+	return (digits(n / 10) + 1);
+}
+
+int ft_putchar(int c)
+{
+	write(1, &c, 1);
+	return (1);
+}
+
+int ft_putnbr(int nb)
+{
+	int length;
+
+	length = 0;
 	if (nb < 0)
 	{
-		ft_putchar('-');
+		length += ft_putchar('-');
 		nb = -nb;
 	}
 	if (nb >= 10)
 	{
-		ft_putnbr(nb / 10);
+		length += ft_putnbr(nb / 10);
 	}
-	ft_putchar(nb % 10 + '0');
+	length += ft_putchar(nb % 10 + '0');
+	return (length);
 }
 
 void ft_putstr(char *str)
@@ -105,8 +150,15 @@ int ft_printf(const char *str, ...)
 			}
 			else if (str[i] == 'd' || str[i] == 'i')
 			{
-				ft_putnbr(va_arg(args, int));
-				length++;
+				//int value;
+				char *value;
+
+				//value = va_arg(args, int);
+				//length += ft_putnbr(value);
+				value = ft_itoa(va_arg(args, int));
+				ft_putstr(value);
+				length += ft_strlen(value);
+				free(value);
 			}
 			else if (str[i] == 's')
 			{
