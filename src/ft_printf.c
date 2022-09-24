@@ -6,6 +6,18 @@
 static int	digits(unsigned int n);
 static int	is_negative(int n);
 
+size_t	ft_strlen(const char *s)
+{
+	int	len;
+
+	len = 0;
+	while (s[len])
+	{
+		len++;
+	}
+	return ((size_t)len);
+}
+
 static int	ft_hxnlen(unsigned long int n)
 {
 	int	i;
@@ -19,6 +31,96 @@ static int	ft_hxnlen(unsigned long int n)
 		i++;
 	}
 	return (i);
+}
+
+
+char	*ft_strdup(const char *src)
+{
+	char	*ptr;
+	size_t	count;
+
+	count = 0;
+	ptr = (char *)malloc(sizeof(char) * ft_strlen(src) + 1);
+	if (ptr == NULL)
+		return (NULL);
+	while (src[count])
+	{
+		ptr[count] = src[count];
+		count++;
+	}
+	ptr[count] = '\0';
+	return (ptr);
+}
+
+static size_t	ft_calc_size_i(unsigned int n)
+{
+	size_t	i;
+
+	i = 0;
+	while (n != 0)
+	{
+		n = n / 10;
+		i++;
+	}
+	return (i);
+}
+
+char	*ft_u_to_a(unsigned int n)
+{
+	char	*str;
+	size_t	size;
+
+	if (n == 0)
+		return (ft_strdup("0"));
+	size = ft_calc_size_i(n);
+	str = (char *)malloc((size + 1) * sizeof(char));
+	if (!str)
+		return (NULL);
+	str[size] = '\0';
+	while (size > 0)
+	{
+		str[size - 1] = (n % 10) + '0';
+		n = n / 10;
+		size--;
+	}
+	return (str);
+}
+
+static size_t	ft_calc_size(unsigned long long n)
+{
+	size_t	i;
+
+	i = 0;
+	while (n != 0)
+	{
+		n = n / 16;
+		i++;
+	}
+	return (i);
+}
+
+char	*ft_i_to_hex(unsigned long long n)
+{
+	char	*str;
+	size_t	size;
+
+	if (n == 0)
+		return (ft_strdup("0"));
+	size = ft_calc_size(n);
+	str = (char *)malloc((size + 1) * sizeof(char));
+	if (!str)
+		return (NULL);
+	str[size] = '\0';
+	while (size > 0)
+	{
+		if (n % 16 > 9)
+			str[size - 1] = (n % 16) + 'a' - 10;
+		else
+			str[size - 1] = (n % 16) + '0';
+		n = n / 16;
+		size--;
+	}
+	return (str);
 }
 
 int	ft_itoa_hx(unsigned long int n, char *base)
@@ -43,17 +145,6 @@ int	ft_itoa_hx(unsigned long int n, char *base)
 	return (n_digits);
 }
 
-size_t	ft_strlen(const char *s)
-{
-	int	len;
-
-	len = 0;
-	while (s[len])
-	{
-		len++;
-	}
-	return ((size_t)len);
-}
 
 char	*ft_itoa(int n)
 {
@@ -117,6 +208,35 @@ int ft_putnbr(int nb)
 	return (length);
 }
 
+int count_digits(long n)
+{
+	int count;
+
+	count = 0;
+	if (n == 0)
+		return (1);
+	if (n < 0)
+	{
+		n = -n;
+		count++;
+	}
+	while (n > 0)
+	{
+		n = n / 10;
+		count++;
+	}
+	return (count);
+}
+
+void ft_poutnbr_un(unsigned long nb)
+{
+	if (nb >= 10)
+	{
+		ft_poutnbr_un(nb / 10);
+	}
+	ft_putchar(nb % 10 + '0');
+}
+
 void ft_putstr(char *str)
 {
 	int i;
@@ -127,6 +247,7 @@ void ft_putstr(char *str)
 		i++;
 	}
 }
+
 
 int ft_printf(const char *str, ...)
 {
@@ -182,20 +303,23 @@ int ft_printf(const char *str, ...)
 			{
 				ft_putstr("0x");
 				length += 2;
-				length += ft_itoa_hx(va_arg(args, unsigned long int), "0123456789abcdef");
+				length += ft_itoa_hx(va_arg(args, unsigned long long), "0123456789abcdef");
 			}
 			else if (str[i] == 'u')
 			{
-				ft_putnbr(va_arg(args, unsigned int));
-				length++;
+				char *value;
+				value = ft_u_to_a(va_arg(args, unsigned long));
+				ft_putstr(value);
+				length += ft_strlen(value);
+				free(value);
 			}
 			else if (str[i] == 'x')
 			{
-				length += ft_itoa_hx(va_arg(args, unsigned long int), "0123456789abcdef");
+				length += ft_itoa_hx(va_arg(args, unsigned int), "0123456789abcdef");
 			}
 			else if (str[i] == 'X')
 			{
-				length += ft_itoa_hx(va_arg(args, unsigned long int), "0123456789ABCDEF");
+				length += ft_itoa_hx(va_arg(args, unsigned int), "0123456789ABCDEF");
 			}
 		}
 		else
