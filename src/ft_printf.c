@@ -1,23 +1,6 @@
 #include "ft_printf.h"
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
 
-static int	digits(unsigned int n);
-static int	is_negative(int n);
-
-size_t	ft_strlen(const char *s)
-{
-	int	len;
-
-	len = 0;
-	while (s[len])
-	{
-		len++;
-	}
-	return ((size_t)len);
-}
-
+// ft_hxnlen this function count hexa number length 
 static int	ft_hxnlen(unsigned long int n)
 {
 	int	i;
@@ -33,38 +16,21 @@ static int	ft_hxnlen(unsigned long int n)
 	return (i);
 }
 
-
-char	*ft_strdup(const char *src)
-{
-	char	*ptr;
-	size_t	count;
-
-	count = 0;
-	ptr = (char *)malloc(sizeof(char) * ft_strlen(src) + 1);
-	if (ptr == NULL)
-		return (NULL);
-	while (src[count])
-	{
-		ptr[count] = src[count];
-		count++;
-	}
-	ptr[count] = '\0';
-	return (ptr);
-}
-
-static size_t	ft_calc_size_i(unsigned int n)
+// ft_calc_size_i this fucntion conta os digitos base 10 or 16
+size_t	ft_calc_size_base(unsigned int n, int base)
 {
 	size_t	i;
 
 	i = 0;
 	while (n != 0)
 	{
-		n = n / 10;
+		n = n / base;
 		i++;
 	}
 	return (i);
 }
 
+// ft_u_to_a convert unsigned int to alphabet
 char	*ft_u_to_a(unsigned int n)
 {
 	char	*str;
@@ -72,8 +38,8 @@ char	*ft_u_to_a(unsigned int n)
 
 	if (n == 0)
 		return (ft_strdup("0"));
-	size = ft_calc_size_i(n);
-	str = (char *)malloc((size + 1) * sizeof(char));
+	size = ft_calc_size_base(n, 10);
+	str = malloc((size + 1) * sizeof(char));
 	if (!str)
 		return (NULL);
 	str[size] = '\0';
@@ -86,19 +52,7 @@ char	*ft_u_to_a(unsigned int n)
 	return (str);
 }
 
-static size_t	ft_calc_size(unsigned long long n)
-{
-	size_t	i;
-
-	i = 0;
-	while (n != 0)
-	{
-		n = n / 16;
-		i++;
-	}
-	return (i);
-}
-
+// ft_i_to_hex convert unsigned long long to hexa
 char	*ft_i_to_hex(unsigned long long n)
 {
 	char	*str;
@@ -106,8 +60,8 @@ char	*ft_i_to_hex(unsigned long long n)
 
 	if (n == 0)
 		return (ft_strdup("0"));
-	size = ft_calc_size(n);
-	str = (char *)malloc((size + 1) * sizeof(char));
+	size = ft_calc_size_base(n, 16);
+	str = malloc((size + 1) * sizeof(char));
 	if (!str)
 		return (NULL);
 	str[size] = '\0';
@@ -123,6 +77,7 @@ char	*ft_i_to_hex(unsigned long long n)
 	return (str);
 }
 
+// ft_itoa_hx ft_itoa_hx this functions converts an unsigned long int to a hexadecimal string
 int	ft_itoa_hx(unsigned long int n, char *base)
 {
 	char	*str;
@@ -130,7 +85,7 @@ int	ft_itoa_hx(unsigned long int n, char *base)
 	int		i;
 
 	n_digits = ft_hxnlen(n);
-	str = (char *)malloc((n_digits + 1) * sizeof(char));
+	str = malloc((n_digits + 1) * sizeof(char));
 	i = n_digits;
 	if (i == 0)
 		str[0] = '0';
@@ -145,69 +100,7 @@ int	ft_itoa_hx(unsigned long int n, char *base)
 	return (n_digits);
 }
 
-
-char	*ft_itoa(int n)
-{
-	char			*str;
-	int				len;
-	int				negative;
-	unsigned int	nb;
-
-	nb = n;
-	negative = is_negative(n);
-	if (negative)
-		nb = n * (-1);
-	len = digits(nb) + negative;
-	str = malloc(len + 1);
-	if (!str)
-		return (NULL);
-	str[len] = '\0';
-	while (len--)
-	{
-		str[len] = (nb % 10) + '0';
-		nb /= 10;
-	}
-	if (negative)
-		str[0] = '-';
-	return (str);
-}
-
-int	is_negative(int n)
-{
-	return (n < 0);
-}
-
-int	digits(unsigned int n)
-{
-	if (n < 10)
-		return (1);
-	return (digits(n / 10) + 1);
-}
-
-int ft_putchar(int c)
-{
-	write(1, &c, 1);
-	return (1);
-}
-
-int ft_putnbr(int nb)
-{
-	int length;
-
-	length = 0;
-	if (nb < 0)
-	{
-		length += ft_putchar('-');
-		nb = -nb;
-	}
-	if (nb >= 10)
-	{
-		length += ft_putnbr(nb / 10);
-	}
-	length += ft_putchar(nb % 10 + '0');
-	return (length);
-}
-
+// count_digits this function counts the number of digits in a number
 int count_digits(long n)
 {
 	int count;
@@ -228,26 +121,13 @@ int count_digits(long n)
 	return (count);
 }
 
+// ft_poutnbr_un ft_print_unsigned_number
 void ft_poutnbr_un(unsigned long nb)
 {
 	if (nb >= 10)
-	{
 		ft_poutnbr_un(nb / 10);
-	}
 	ft_putchar(nb % 10 + '0');
 }
-
-void ft_putstr(char *str)
-{
-	int i;
-	i = 0;
-	while (str[i] != '\0')
-	{
-		ft_putchar(str[i]);
-		i++;
-	}
-}
-
 
 int ft_printf(const char *str, ...)
 {
@@ -255,6 +135,7 @@ int ft_printf(const char *str, ...)
 	int length;
 	va_list args;
 	char *text;
+	char *value;	
 
 	va_start(args, str);
 	i = 0;
@@ -271,11 +152,6 @@ int ft_printf(const char *str, ...)
 			}
 			else if (str[i] == 'd' || str[i] == 'i')
 			{
-				//int value;
-				char *value;
-
-				//value = va_arg(args, int);
-				//length += ft_putnbr(value);
 				value = ft_itoa(va_arg(args, int));
 				ft_putstr(value);
 				length += ft_strlen(value);
@@ -307,20 +183,15 @@ int ft_printf(const char *str, ...)
 			}
 			else if (str[i] == 'u')
 			{
-				char *value;
 				value = ft_u_to_a(va_arg(args, unsigned long));
 				ft_putstr(value);
 				length += ft_strlen(value);
 				free(value);
 			}
 			else if (str[i] == 'x')
-			{
 				length += ft_itoa_hx(va_arg(args, unsigned int), "0123456789abcdef");
-			}
 			else if (str[i] == 'X')
-			{
 				length += ft_itoa_hx(va_arg(args, unsigned int), "0123456789ABCDEF");
-			}
 		}
 		else
 		{
