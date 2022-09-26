@@ -1,6 +1,6 @@
 NAME	=	libftprintf.a
 CFLAGS	=	-Wall -Wextra -Werror
-FILES	=	ft_printf.c utils.c
+FILES	=	ft_printf.c core.c
 HEADER	=	ft_printf.h
 OBJ		=	$(FILES:.c=.o)
 
