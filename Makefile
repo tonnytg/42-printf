@@ -1,13 +1,13 @@
 NAME	=	libftprintf.a
 CFLAGS	=	-Wall -Wextra -Werror
-SRC		=	ft_printf.c
+FILES	=	ft_printf.c utils.c
 HEADER	=	ft_printf.h
-OBJ		=	$(SRC:.c=.o)
+OBJ		=	$(FILES:.c=.o)
 
 all: $(NAME)
 
 $(OBJ): $(HEADER)
-	cc $(CFLAGS) -c $(SRC)
+	cc $(CFLAGS) -c $(FILES)
 
 $(NAME): $(OBJ)
 	make -C libft

@@ -1,12 +1,31 @@
 #include "ft_printf.h"
 
+int ft_choice(char c, int length, va_list args)
+{
+	if (c == 'c')
+		length += ft_get_char(args);
+	else if (c == 's')
+		length += ft_get_str (args);
+	else if (c == 'p')
+		length += ft_get_pointer (args, c);
+	else if (c == 'd' || c == 'i')
+		length += ft_get_int(args);
+	else if (c == 'u')
+		length += ft_get_unsigned_to_ascii(args);
+	else if (c == 'x')
+		length += ft_get_hex(args, c);
+	else if (c == 'X')
+		length += ft_get_hex(args, c);
+	else if (c == '%')
+		length += write(1, &c, 1);
+	return (length);
+}
+
 int	ft_printf(const char *str, ...)
 {
 	int i;
 	int length;
 	va_list args;
-	char *text;
-	char *value;	
 
 	va_start(args, str);
 	i = 0;
@@ -16,48 +35,7 @@ int	ft_printf(const char *str, ...)
 		if (str[i] == '%')
 		{
 			i++;
-			if (str[i] == 'c')
-				length += ft_putchar_fd(va_arg(args, int), 1);
-			else if (str[i] == 'd' || str[i] == 'i')
-			{
-				value = ft_itoa(va_arg(args, int));
-				ft_putstr(value);
-				length += ft_strlen(value);
-				free(value);
-			}
-			else if (str[i] == 's')
-			{
-				text = va_arg(args, char *);
-				if (!text)
-					length += ft_putstr("(null)");
-				else
-					length += ft_putstr(text);
-			}
-			else if (str[i] == '%')
-				length += ft_putchar_fd('%', 1);
-			else if (str[i] == 'p')
-			{
-				ft_putstr("0x");
-				length += 2;
-				value = ft_unsigned_to_hex(va_arg(args, unsigned long int), str[i]);
-				ft_putstr(value);
-				length += ft_strlen(value);
-				free(value);
-			}
-			else if (str[i] == 'u')
-			{
-				value = ft_unsigned_to_ascii(va_arg(args, unsigned long));
-				ft_putstr(value);
-				length += ft_strlen(value);
-				free(value);
-			}
-			else if (str[i] == 'x' || str[i] == 'X')
-			{
-				value = ft_unsigned_to_hex(va_arg(args, unsigned int), str[i]);
-				ft_putstr(value);
-				length += ft_strlen(value);
-				free(value);
-			}
+			length = ft_choice(str[i], length, args );
 		}
 		else
 			length += ft_putchar_fd(str[i], 1);
