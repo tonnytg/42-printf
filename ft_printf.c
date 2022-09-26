@@ -12,9 +12,7 @@ int ft_choice(char c, int length, va_list args)
 		length += ft_get_int(args);
 	else if (c == 'u')
 		length += ft_get_unsigned_to_ascii(args);
-	else if (c == 'x')
-		length += ft_get_hex(args, c);
-	else if (c == 'X')
+	else if (c == 'x' || c == 'X')
 		length += ft_get_hex(args, c);
 	else if (c == '%')
 		length += write(1, &c, 1);
