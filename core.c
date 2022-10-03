@@ -39,9 +39,15 @@ int	ft_get_pointer(va_list args, char c)
 	int		length;
 	char	*value;
 
+	value = va_arg(args, unsigned long int);
+	if ( value == 0)
+	{
+		length = ft_putstr("(nil)");
+		return (length);
+	}
 	ft_putstr("0x");
 	length = 2;
-	value = ft_unsigned_to_hex(va_arg(args, unsigned long int), c);
+	value = ft_unsigned_to_hex(, c);
 	ft_putstr(value);
 	length += ft_strlen(value);
 	free(value);
